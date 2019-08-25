@@ -1,4 +1,1 @@
-S = {'1': 'A', '2': 'B'}
-del(S['1'])
-del(S['1'])
-S
+# Pomožna testna datoteka

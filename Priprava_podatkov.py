@@ -130,13 +130,14 @@ def izloci_podatke_fic(blok, teden, quest, complete):
     total_chapters = int(total['Total_chapters'])
 
     if total['NaNt']:
-        total_words = float('nan')
+        total_words = -1
     else:
         total_words = float(total['Total_words'])
         if total['Total_K']:
             total_words *= 1000
         if total['Total_M']:
             total_words *= 1000000
+        total_words = int(total_words)
 
     # če se fic na novo začne še nima updatov
     update = vzorec_update.search(blok)
@@ -146,6 +147,7 @@ def izloci_podatke_fic(blok, teden, quest, complete):
         update_words = float(update['Update_words'])
         if update['Update_K']:
             update_words *= 1000
+        update_words = int(update_words)
     else:
         update_chapters = total_chapters
         update_words = total_words
