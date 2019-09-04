@@ -171,14 +171,16 @@ def izloci_podatke_fic(blok, teden, quest, complete):
         seznam_strani = []
         if re.compile(r'spacebattles').search(blok):
             seznam_strani.append('SB')
-        if re.compile(r'archiveofourown').search(blok):
+        elif re.compile(r'archiveofourown').search(blok):
             seznam_strani.append('AO3')
-        if re.compile(r'fanfiction').search(blok):
+        elif re.compile(r'fanfiction').search(blok):
             seznam_strani.append('FF')
-        if re.compile(r'sufficientvelocity').search(blok):
+        elif re.compile(r'sufficientvelocity').search(blok):
             seznam_strani.append('SV')
-        if re.compile(r'questionablequesting').search(blok):
+        elif re.compile(r'questionablequesting').search(blok):
             seznam_strani.append('QQ')
+        else:
+            seznam_strani.append('Other')
 
     podatki = {
         'naslov': naslov,
