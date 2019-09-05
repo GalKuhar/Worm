@@ -1,6 +1,7 @@
 import re
 import os
 import csv
+from datetime import datetime
 
 # ------ kopirano od profesorja ------
 
@@ -60,6 +61,8 @@ vzorec_New_Quests = re.compile(r'<h2><u><a name="new-quest">New Quests(</a>)?</u
 
 vzorec_Completed_Fics = re.compile(r'<h2><u><a name="completed-fic">Completed Fics(</a>)?</u></h2>.*?<br><br>', flags=re.DOTALL)
 
+vzorec_Completed_Quests = re.compile(r'<h2><u><a name="completed-quest">Completed Quests(</a>)?</u></h2>.*?<br><br>', flags=re.DOTALL)
+
 vzorec_One_shot_Fics = re.compile(r'<h2><u><a name="one-shot-fic">One-shot Fics(</a>)?</u></h2>.*?<br><br>', flags=re.DOTALL)
 
 vzorec_Revived_Fics = re.compile(r'<h2><u><a name="revived-fic">Revived Fics(</a>)?</u></h2>.*?<br><br>', flags=re.DOTALL)
@@ -102,6 +105,10 @@ vzorec_date_created = re.compile(
 
 vzorec_date_updated = re.compile(
     r'<br><b>Updated on:</b> (?P<Date_updated>.*?)<'
+)
+
+vzorec_datum_objave = re.compile(
+    r'"?(?P<dan>\d+)(st|nd|rd|th) (?P<mesec>\w+),? ?(?P<leto>\d+)?"?'
 )
 
 def izloci_strani(strani):
@@ -151,14 +158,41 @@ def izloci_podatke_fic(blok, teden, quest, complete):
     else:
         update_chapters = total_chapters
         update_words = total_words
+    
+    # Več različnih možnosti kako to predstavljeno:
+    # Objavljeno v tem tednu: 'okrajšano ime dneva' at 'čas objave' -> zapomni si ta teden
+    # Objavljeno v tem letu: 'št dneva + st/nd/rd/th' 'ime meseca' -> zapomni si dan, mesec, leto preberi iz tedna
+    # Objavljeno prej: 'št dneva + st/nd/rd/th' 'ime meseca', 'leto' -> zapomni dan, mesec, leto
 
-    datum_novega_poglavja = vzorec_date_updated.search(blok).groupdict()
-    date_updated = datum_novega_poglavja['Date_updated']
+    # opomba: Vzorec za teden vedno: 'leto'-'mesec'-'dan'
+
+    date_updated = datetime.strptime(teden, '%Y-%m-%d')
+
+    podatki_date_updated = vzorec_datum_objave.search(vzorec_date_updated.search(blok).groupdict()['Date_updated'])
+    if podatki_date_updated:
+        dict_podatkov = podatki_date_updated.groupdict()
+        # vse naenkrat popraviš, če ne problemi s prestopnimi leti
+        if dict_podatkov['leto']:
+            date_updated = date_updated.replace(day=int(dict_podatkov['dan']), month=datetime.strptime(dict_podatkov['mesec'], '%b').month, year=int(dict_podatkov['leto']))
+        else:
+            date_updated = date_updated.replace(day=int(dict_podatkov['dan']), month=datetime.strptime(dict_podatkov['mesec'], '%b').month)
+        date_updated = datetime.strftime(date_updated, '%Y-%m-%d')
+    else:
+        date_updated = teden
 
     datum_prve_objave = vzorec_date_created.search(blok)
     if datum_prve_objave:
-        datum_prve_objave = datum_prve_objave.groupdict()
-        date_created = datum_prve_objave['Date_created']
+        date_created = datetime.strptime(teden, '%Y-%m-%d')
+
+        podatki_date_created = vzorec_datum_objave.search(datum_prve_objave.groupdict()['Date_created'])
+
+        if podatki_date_created:
+            dict_podatkov = podatki_date_created.groupdict()
+            if dict_podatkov['leto']:
+                date_created = date_created.replace(day=int(dict_podatkov['dan']), month=datetime.strptime(dict_podatkov['mesec'], '%b').month, year=int(dict_podatkov['leto']))
+            else:
+                date_created = date_created.replace(day=int(dict_podatkov['dan']), month=datetime.strptime(dict_podatkov['mesec'], '%b').month)
+        date_created = datetime.strftime(date_created, '%Y-%m-%d')
     else:
         date_created = 'unknown'
 
@@ -224,6 +258,7 @@ def obdelaj_teden(teden):
         (vzorec_New_Fics, False, False),
         (vzorec_New_Quests, True, False),
         (vzorec_Completed_Fics, False, True),
+        (vzorec_Completed_Quests, True, True),
         (vzorec_One_shot_Fics, False, True),
         (vzorec_Revived_Fics, False, False),
         (vzorec_Revived_Quests, True, False),
