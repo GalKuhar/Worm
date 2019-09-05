@@ -146,7 +146,7 @@ def izloci_podatke_fic(blok, teden, quest, complete):
             total_words *= 1000000
         total_words = int(total_words)
 
-    # če se fic na novo začne še nima updatov
+    # če se fic na zadnje začne še nima updatov
     update = vzorec_update.search(blok)
     if update:
         update = update.groupdict()
@@ -223,10 +223,10 @@ def izloci_podatke_fic(blok, teden, quest, complete):
         '# novih besed': update_words,
         '# poglavij': total_chapters,
         '# besed': total_words,
-        'datum objave novega poglavja': date_updated,
+        'datum objave zadnjega poglavja': date_updated,
         'datum prve objave': date_created,
         'seznam strani na katerih je fic': seznam_strani,
-        'teden v katerem je bilo objavljeno novo poglavje': teden,
+        'teden v katerem je bilo objavljeno zadnje poglavje': teden,
         'je quest': quest,
         'je zaključen': complete
     }
@@ -242,10 +242,10 @@ def obdelaj_teden(teden):
     # novih besed,
     # poglavij,
     # besed,
-    datum objave novega poglavja,
+    datum objave zadnjega poglavja,
     datum prve objave,
     seznam strani na katerih je fic,
-    teden v katerem je bilo objavljeno novo poglavje,
+    teden v katerem je bilo objavljeno zadnje poglavje,
     je quest,
     je zaključen
     )'''
@@ -293,7 +293,10 @@ def obdelaj_podatke(kazalo):
             naslov_fica = slovar_fica['naslov']
             if naslov_fica not in slovar_vseh_ficov:
                 seznam_strani_za_fic = slovar_fica.pop('seznam strani na katerih je fic')
-                slovar_vseh_ficov[naslov_fica] = slovar_fica
+                zacasni_slovar_fica = slovar_fica
+                zacasni_slovar_fica.pop('# novih poglavij')
+                zacasni_slovar_fica.pop('# novih besed')
+                slovar_vseh_ficov[naslov_fica] = zacasni_slovar_fica
             naslov_fica = slovar_fica.get('naslov')
             slovar_fica.pop('seznam strani na katerih je fic', None)
             for stran in seznam_strani_za_fic:
@@ -307,13 +310,11 @@ podatki_vseh_ficov, podatki_po_tednih, podatki_strani = obdelaj_podatke(kazalo)
 zapisi_csv(podatki_vseh_ficov,
            ['naslov',
             'avtor',
-            '# novih poglavij',
-            '# novih besed',
             '# poglavij',
             '# besed',
-            'datum objave novega poglavja',
+            'datum objave zadnjega poglavja',
             'datum prve objave',
-            'teden v katerem je bilo objavljeno novo poglavje',
+            'teden v katerem je bilo objavljeno zadnje poglavje',
             'je quest',
             'je zaključen'
             ],
@@ -326,9 +327,9 @@ zapisi_csv(podatki_po_tednih,
             '# novih besed',
             '# poglavij',
             '# besed',
-            'datum objave novega poglavja',
+            'datum objave zadnjega poglavja',
             'datum prve objave',
-            'teden v katerem je bilo objavljeno novo poglavje',
+            'teden v katerem je bilo objavljeno zadnje poglavje',
             'je quest',
             'je zaključen'
             ],
