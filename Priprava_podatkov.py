@@ -219,16 +219,16 @@ def izloci_podatke_fic(blok, teden, quest, complete):
     podatki = {
         'naslov': naslov,
         'avtor': author,
-        '# novih poglavij': update_chapters,
-        '# novih besed': update_words,
-        '# poglavij': total_chapters,
-        '# besed': total_words,
-        'datum objave zadnjega poglavja': date_updated,
-        'datum prve objave': date_created,
-        'seznam strani na katerih je fic': seznam_strani,
-        'teden v katerem je bilo objavljeno zadnje poglavje': teden,
-        'je quest': quest,
-        'je zaključen': complete
+        'nova poglavja': update_chapters,
+        'nove besede': update_words,
+        'poglavja': total_chapters,
+        'besede': total_words,
+        'zadnja objava': date_updated,
+        'prva objava': date_created,
+        'strani': seznam_strani,
+        'teden zadnje objave': teden,
+        'quest': quest,
+        'zaključen': complete
     }
 
     return podatki
@@ -238,16 +238,16 @@ def obdelaj_teden(teden):
     (
     naslov,
     avtor,
-    # novih poglavij,
-    # novih besed,
-    # poglavij,
-    # besed,
-    datum objave zadnjega poglavja,
-    datum prve objave,
-    seznam strani na katerih je fic,
-    teden v katerem je bilo objavljeno zadnje poglavje,
-    je quest,
-    je zaključen
+    nova poglavja,
+    nove besede,
+    poglavja,
+    besede,
+    zadnja objava,
+    prva objava,
+    strani,
+    teden zadnje objave,
+    quest,
+    zaključen
     )'''
 
     teden_datoteka = datoteka_tedna(teden)
@@ -292,15 +292,15 @@ def obdelaj_podatke(kazalo):
         for slovar_fica in seznam_slovarjev_ficov:
             naslov_fica = slovar_fica['naslov']
             if naslov_fica not in slovar_vseh_ficov:
-                seznam_strani_za_fic = slovar_fica.pop('seznam strani na katerih je fic')
+                seznam_strani_za_fic = slovar_fica.pop('strani')
                 zacasni_slovar_fica = slovar_fica.copy()
-                zacasni_slovar_fica.pop('# novih poglavij')
-                zacasni_slovar_fica.pop('# novih besed')
+                zacasni_slovar_fica.pop('nova poglavja')
+                zacasni_slovar_fica.pop('nove besede')
                 slovar_vseh_ficov[naslov_fica] = zacasni_slovar_fica
             naslov_fica = slovar_fica.get('naslov')
-            slovar_fica.pop('seznam strani na katerih je fic', None)
+            slovar_fica.pop('strani', None)
             for stran in seznam_strani_za_fic:
-                seznam_strani += [{'naslov': naslov_fica, 'stran na kateri je fic': stran}]
+                seznam_strani += [{'naslov': naslov_fica, 'stran': stran}]
         seznam_po_tednih += seznam_slovarjev_ficov
 
     return slovar_vseh_ficov.values(), seznam_po_tednih, seznam_strani
@@ -310,33 +310,33 @@ podatki_vseh_ficov, podatki_po_tednih, podatki_strani = obdelaj_podatke(kazalo)
 zapisi_csv(podatki_vseh_ficov,
            ['naslov',
             'avtor',
-            '# poglavij',
-            '# besed',
-            'datum objave zadnjega poglavja',
-            'datum prve objave',
-            'teden v katerem je bilo objavljeno zadnje poglavje',
-            'je quest',
-            'je zaključen'
+            'poglavja',
+            'besede',
+            'zadnja objava',
+            'prva objava',
+            'teden zadnje objave',
+            'quest',
+            'zaključen'
             ],
            os.getcwd() + "\\obdelani_podatki\\podatki_vseh_ficov.csv")
 
 zapisi_csv(podatki_po_tednih,
            ['naslov',
             'avtor',
-            '# novih poglavij',
-            '# novih besed',
-            '# poglavij',
-            '# besed',
-            'datum objave zadnjega poglavja',
-            'datum prve objave',
-            'teden v katerem je bilo objavljeno zadnje poglavje',
-            'je quest',
-            'je zaključen'
+            'nova poglavja',
+            'nove besede',
+            'poglavja',
+            'besede',
+            'zadnja objava',
+            'prva objava',
+            'teden zadnje objave',
+            'quest',
+            'zaključen'
             ],
            os.getcwd() + "\\obdelani_podatki\\podatki_po_tednih.csv")
 
 zapisi_csv(podatki_strani,
            ['naslov',
-            'stran na kateri je fic'
+            'stran'
             ],
            os.getcwd() + "\\obdelani_podatki\\podatki_strani.csv")
