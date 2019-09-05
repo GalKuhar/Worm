@@ -293,7 +293,7 @@ def obdelaj_podatke(kazalo):
             naslov_fica = slovar_fica['naslov']
             if naslov_fica not in slovar_vseh_ficov:
                 seznam_strani_za_fic = slovar_fica.pop('seznam strani na katerih je fic')
-                zacasni_slovar_fica = slovar_fica
+                zacasni_slovar_fica = slovar_fica.copy()
                 zacasni_slovar_fica.pop('# novih poglavij')
                 zacasni_slovar_fica.pop('# novih besed')
                 slovar_vseh_ficov[naslov_fica] = zacasni_slovar_fica
