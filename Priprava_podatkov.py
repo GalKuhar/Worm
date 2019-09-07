@@ -297,10 +297,11 @@ def obdelaj_podatke(kazalo):
                 zacasni_slovar_fica.pop('nova poglavja')
                 zacasni_slovar_fica.pop('nove besede')
                 slovar_vseh_ficov[naslov_fica] = zacasni_slovar_fica
-            naslov_fica = slovar_fica.get('naslov')
+                for stran in seznam_strani_za_fic:
+                    seznam_strani += [{'naslov': naslov_fica, 'stran': stran}]
+
             slovar_fica.pop('strani', None)
-            for stran in seznam_strani_za_fic:
-                seznam_strani += [{'naslov': naslov_fica, 'stran': stran}]
+            
         seznam_po_tednih += seznam_slovarjev_ficov
 
     return slovar_vseh_ficov.values(), seznam_po_tednih, seznam_strani
