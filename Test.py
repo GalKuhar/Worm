@@ -1,1 +1,0 @@
-# Pomožna testna datoteka
